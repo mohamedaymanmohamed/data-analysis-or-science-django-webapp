@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Analysis Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: row; /* ترتيب العناصر في صف واحد */
+            gap: 20px; /* المسافة بين العناصر */
+            margin: 20px; /* الهامش حول العناصر */
+        }
+        .cards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* المسافة بين البطائق */
+            width: 300px; /* عرض منطقة البطائق */
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            height: 150px; /* ارتفاع البطاقة */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card textarea {
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 8px;
+            font-size: 24px; /* حجم الخط */
+            box-sizing: border-box;
+            resize: none;
+            height: 80px; /* ارتفاع الحقل النصي */
+        }
+        .card button {
+            margin-top: 10px; /* المسافة بين textarea والزر */
+            padding: 8px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .card button:hover {
+            background-color: #0056b3;
+        }
+        .description {
+            flex: 1; /* يجعل وصف البيانات يأخذ المساحة المتبقية */
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* توسيط المحتوى أفقيًا */
+            justify-content: center; /* توسيط المحتوى عموديًا */
+            text-align: center; /* توسيط النص */
+            min-height: 200px; /* ارتفاع الحد الأدنى لتكبير المربع */
+            width: 400px; /* عرض المربع */
+            overflow: auto; /* إضافة شريط تمرير إذا كان المحتوى كبيرًا */
+        }
+        .chart {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* المسافة بين الرسوم البيانية */
+            margin-top: 20px;
+        }
+        .chart > div {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .chart h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Data Analysis Results</h2>
+
+    <div class="container">
+        <!-- البطاقات -->
+        <div class="cards">
+            <div class="card">
+                <h3>Total income</h3>
+                <textarea id="totalText1" rows="4">{{ total1 }}</textarea>
+                
+            </div>
+
+            <div class="card">
+                <h3>Total cost</h3>
+                <textarea id="totalText2" rows="4">{{ total2 }}</textarea>
+            
+            </div>
+
+            <div class="card">
+                <h3>Total profit</h3>
+                <textarea id="totalText3" rows="4">{{ total3 }}</textarea>
+            
+            </div>
+        </div>
+
+        <!-- وصف البيانات -->
+        <div class="description">
+            <h3>Data Description</h3>
+            {{ describe|safe }}
+        </div>
+    </div>
+
+    <div class="chart">
+        <div>
+            <h3>Pie Chart</h3>
+            <div>{{ pie_chart|safe }}</div>
+        </div>
+        <div>
+            <h3>Donut Chart</h3>
+            <div>{{ donut_chart|safe }}</div>
+        </div>
+        <div>
+            <h3>Line Chart</h3>
+            <div>{{ line_chart|safe }}</div>
+        </div>
+        <div>
+            <h3>Bar Chart</h3>
+            <div>{{ bar_chart|safe }}</div>
+        </div>
+    </div>
+
+    <script>
+        function saveText(textareaId) {
+            var totalText = document.getElementById(textareaId).value;
+
+            fetch("{% url 'update_total' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new URLSearchParams({
+                    'total': totalText,
+                    'return_url': window.location.pathname
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Total updated successfully!');
+                } else {
+                    alert('Failed to update total.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
